@@ -29,7 +29,7 @@ jobs:
       run: |
         mkdir -p dist
         
-        # 目标平台列表：操作系统/架构
+        # 目标平台列表
         platforms=(
           "linux/amd64"
           "linux/arm64"
@@ -45,7 +45,6 @@ jobs:
           GOARCH=${platform#*/}
           output="dist/new-api-${GOOS}-${GOARCH}"
           
-          # 处理特殊架构
           if [ "$GOARCH" = "armv7" ]; then
             GOARM=7
             output="dist/new-api-${GOOS}-armv7"
@@ -53,15 +52,13 @@ jobs:
             GOARM=""
           fi
           
-          # Windows 可执行文件加 .exe 后缀
           if [ "$GOOS" = "windows" ]; then
             output="${output}.exe"
           fi
           
           echo "Building $output ..."
           CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH GOARM=$GOARM \
-            go build -ldflags "-s -w -linkmode external -extldflags -static" \
-            -o "$output" main.go
+            go build -ldflags "-s -w" -o "$output" main.go
         done
 
     - name: Upload artifacts
